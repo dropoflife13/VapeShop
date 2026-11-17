@@ -28,7 +28,7 @@ export function GiantWord({
     <motion.div
       aria-hidden="true"
       style={reduceMotion ? undefined : { y: parallaxY }}
-      className="pointer-events-none absolute inset-x-0 top-1/2 z-0 flex -translate-y-1/2 select-none items-center justify-center overflow-hidden px-2"
+      className="pointer-events-none absolute inset-x-0 top-[40%] z-0 flex -translate-y-1/2 select-none items-center justify-center overflow-hidden px-2 sm:top-[44%]"
     >
       <AnimatePresence mode="wait">
         <motion.div

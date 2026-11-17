@@ -7,7 +7,7 @@ import { ProductWorld } from "@/components/world/ProductWorld";
 import { WorldSections } from "@/components/world/WorldSections";
 
 export default function HomePage() {
-  const [activeId, setActiveId] = useState<ProductWorldId>("x-slimbar");
+  const [activeId, setActiveId] = useState<ProductWorldId>("xv2-plus");
   const activeTheme =
     PRODUCT_THEMES.find((t) => t.id === activeId) ?? PRODUCT_THEMES[0]!;
 

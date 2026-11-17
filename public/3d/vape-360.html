@@ -125,6 +125,9 @@ function buildB(){var g=new T.Group(),W=2.3,D=1.3;
 var turn=new T.Group();scene.add(turn);
 var devs=[buildA(),buildB()];
 devs.forEach(function(d){d.position.y=-3.2;d.visible=false;turn.add(d)});
+var shTex=tex(256,256,function(c,w,h){var g=c.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);g.addColorStop(0,'rgba(0,0,0,.55)');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,w,h);});
+var sh=new T.Mesh(new T.PlaneGeometry(4.4,4.4),new T.MeshBasicMaterial({map:shTex,transparent:true,depthWrite:false}));
+sh.rotation.x=-Math.PI/2;sh.position.y=-3.32;scene.add(sh);
 
 var initIdx=/[?&]model=xflava/.test(location.search)?1:0;
 var initDist=/[?&]transparent/.test(location.search)?15.5:14;

@@ -35,6 +35,13 @@ export const metadata: Metadata = {
   title: "VapeVault — Authentic Devices, Express Pickup & Serial QR",
   description:
     "Browse live shelf stock, reserve in-store pickup for 60 minutes, and verify authentic devices via serial QR.",
+  icons: {
+    icon: [
+      { url: "/images/logo-light.png", media: "(prefers-color-scheme: light)" },
+      { url: "/images/logo-dark.png", media: "(prefers-color-scheme: dark)" },
+    ],
+    apple: "/images/logo-light.png",
+  },
 };
 
 const THEME_PREPAINT_SCRIPT = `

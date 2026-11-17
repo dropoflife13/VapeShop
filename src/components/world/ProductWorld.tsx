@@ -21,6 +21,7 @@ import {
 } from "@/lib/product-themes";
 import { GiantWord } from "@/components/world/GiantWord";
 import { FlavorAccents } from "@/components/world/FlavorAccents";
+import { SmokeTransition } from "@/components/world/SmokeTransition";
 import { CircleCTA } from "@/components/world/CircleCTA";
 import { ThumbSwitcher } from "@/components/world/ThumbSwitcher";
 import { Marquee } from "@/components/world/Marquee";
@@ -260,9 +261,8 @@ export function ProductWorld({ activeId, onSelect }: ProductWorldProps) {
         </div>
       )}
 
-      {/* Main Hero Stage */}
-      <div className="relative flex flex-1 items-center justify-center px-5 py-6 sm:px-8">
-        {/* Giant Background Word */}
+      {/* Main Hero Stage: Giant Word + Flavor Accents + Centered 3D Model */}
+      <div className="relative flex flex-1 items-center justify-center px-5 py-2 sm:px-8">
         <GiantWord
           word={active.word}
           wordColor={active.wordColor}
@@ -270,162 +270,122 @@ export function ProductWorld({ activeId, onSelect }: ProductWorldProps) {
           containerRef={heroRef}
         />
 
-        {/* Flavor SVG Accents + Vapor Swirl */}
         <FlavorAccents
           productId={active.id}
           accent={active.accent}
           containerRef={heroRef}
         />
 
-        {/* Foreground Grid: Left Info / Center Product / Right Specs */}
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-6 lg:grid-cols-12">
-          {/* Left-center: Product number, name, flavor, 18+ badge (mobile) */}
-          <div className="order-1 lg:col-span-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-current/20 bg-[var(--surface-tint)] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md sm:hidden">
-              18+ ADULT STOREFRONT
-            </div>
-            <p className="mt-2 font-mono text-xs font-bold uppercase tracking-[0.22em] text-[var(--ink)]">
-              {active.number} / 04
-            </p>
-            <h1 className="mt-1 font-display text-4xl uppercase leading-[0.95] tracking-tight sm:text-5xl">
-              {active.name}
-            </h1>
-            <p className="mt-2 font-mono text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
-              {active.flavor}
-            </p>
-            <p className="mt-2 max-w-xs text-sm font-medium leading-snug text-[var(--ink)]">
-              {active.tagline}
-            </p>
+        <SmokeTransition triggerKey={active.id} accent={active.accent} />
 
-            {/* Spec callouts left (desktop) */}
-            <div className="mt-8 hidden flex-col gap-4 lg:flex">
-              <div className="flex items-center gap-3">
-                <span className="h-[2px] w-8 bg-current" />
-                <div>
-                  <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-                    CAPACITY
-                  </span>
-                  <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
-                    {active.specs.puffs}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="h-[2px] w-8 bg-current" />
-                <div>
-                  <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-                    CHASSIS
-                  </span>
-                  <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
-                    {active.specs.finish}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Center-front: Transparent PNG Cutout OR Lazy-loaded 3D Viewer */}
-          <div className="order-2 flex flex-col items-center justify-center lg:col-span-6">
-            <div className="relative flex h-[340px] w-full max-w-[440px] items-center justify-center sm:h-[440px]">
-              {!show3D ? (
-                <motion.div
-                  key={active.id}
-                  initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 20 }}
-                  animate={
-                    reduceMotion
-                      ? { opacity: 1 }
-                      : { opacity: 1, scale: 1, y: [0, -10, 0] }
-                  }
-                  transition={
-                    reduceMotion
-                      ? { duration: 0.25 }
-                      : {
-                          opacity: { duration: 0.35 },
-                          scale: { type: "spring", stiffness: 220, damping: 20 },
-                          y: { duration: 4.6, repeat: Infinity, ease: "easeInOut" },
-                        }
-                  }
-                  style={
-                    reduceMotion
-                      ? undefined
-                      : {
-                          rotateX: tiltX,
-                          rotateY: tiltY,
-                          rotateZ: scrollRotate,
-                          transformPerspective: 900,
-                        }
-                  }
-                  className="relative flex items-center justify-center"
-                >
-                  {/* Soft long drop shadow */}
-                  <div
-                    aria-hidden="true"
-                    className="absolute -bottom-6 h-10 w-44 rounded-full bg-black/35 blur-xl"
-                  />
-                  <Image
-                    src={active.image}
-                    alt={`${active.name} — ${active.flavor}`}
-                    width={360}
-                    height={540}
-                    priority
-                    className="h-[310px] w-auto select-none object-contain drop-shadow-[0_28px_32px_rgba(0,0,0,0.42)] sm:h-[410px]"
-                  />
-                </motion.div>
-              ) : (
-                <div className="relative h-full w-full">
-                  {!viewerLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="rounded-full bg-black/70 px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-white">
-                        Loading 3D View...
-                      </span>
-                    </div>
-                  )}
-                  <iframe
-                    key={active.viewerSrc}
-                    src={active.viewerSrc}
-                    title={`${active.name} 3D Viewer`}
-                    onLoad={() => setViewerLoaded(true)}
-                    className={`h-full w-full border-0 bg-transparent transition-opacity duration-300 ${
-                      viewerLoaded ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right callouts (desktop) */}
-          <div className="order-3 hidden flex-col items-end gap-5 text-right lg:col-span-3 lg:flex">
-            <div className="flex items-center gap-3">
-              <div>
-                <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-                  SMART DISPLAY
-                </span>
-                <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
-                  {active.specs.display}
-                </span>
-              </div>
-              <span className="h-[2px] w-8 bg-current" />
-            </div>
-
-            <div className="rounded-2xl border border-current/20 bg-[var(--surface-tint)] p-4 backdrop-blur-md">
-              <span className="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-                1-HR HOLD
-              </span>
-              <p className="mt-1 font-mono text-xs font-bold uppercase tracking-[0.12em]">
-                VERIFIED SERIAL QR
-              </p>
-            </div>
+        <div className="relative z-10 flex w-full max-w-5xl flex-col items-center justify-center">
+          <div className="relative flex h-[320px] w-full max-w-[440px] items-center justify-center sm:h-[400px]">
+            {!show3D ? (
+              <motion.div
+                key={active.id}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 20 }}
+                animate={
+                  reduceMotion
+                    ? { opacity: 1 }
+                    : { opacity: 1, scale: 1, y: [0, -10, 0] }
+                }
+                transition={
+                  reduceMotion
+                    ? { duration: 0.25 }
+                    : {
+                        opacity: { duration: 0.35 },
+                        scale: { type: "spring", stiffness: 220, damping: 20 },
+                        y: { duration: 4.6, repeat: Infinity, ease: "easeInOut" },
+                      }
+                }
+                style={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        rotateX: tiltX,
+                        rotateY: tiltY,
+                        rotateZ: scrollRotate,
+                        transformPerspective: 900,
+                      }
+                }
+                className="relative flex items-center justify-center"
+              >
+                <div
+                  aria-hidden="true"
+                  className="absolute -bottom-6 h-10 w-44 rounded-full bg-black/35 blur-xl"
+                />
+                <Image
+                  src={active.image}
+                  alt={`${active.name} — ${active.flavor}`}
+                  width={360}
+                  height={540}
+                  priority
+                  className="h-[290px] w-auto select-none object-contain drop-shadow-[0_28px_32px_rgba(0,0,0,0.42)] sm:h-[380px]"
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={active.viewerSrc}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="relative h-full w-full"
+              >
+                {!viewerLoaded && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <span className="rounded-full bg-black/70 px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                      Loading 3D View...
+                    </span>
+                  </div>
+                )}
+                <iframe
+                  src={active.viewerSrc}
+                  title={`${active.name} 3D Viewer`}
+                  onLoad={() => setViewerLoaded(true)}
+                  className={`h-full w-full border-0 bg-transparent transition-all duration-500 ease-out ${
+                    viewerLoaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
+                  }`}
+                />
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Bottom Controls Row: ThumbSwitcher (bottom-left) + CircleCTA (bottom-right) */}
-      <div className="relative z-20 mx-auto flex w-full max-w-7xl items-end justify-between gap-4 px-5 pb-5 sm:px-8">
-        <div className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-            SELECT DEVICE (&larr; / &rarr;)
-          </span>
+      {/* Bottom Dock: Product Info + Specs + ThumbSwitcher + CircleCTA */}
+      <div className="relative z-20 mx-auto grid w-full max-w-7xl items-end gap-5 px-5 pb-5 sm:px-8 lg:grid-cols-12">
+        {/* Bottom-left: Product info + ThumbSwitcher */}
+        <div className="flex flex-col gap-[22px] lg:col-span-5">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-current/20 bg-[var(--surface-tint)] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md sm:hidden">
+              18+ ADULT STOREFRONT
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active.id}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mt-2 flex flex-wrap items-baseline gap-3">
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-[var(--ink)]">
+                    {active.number} / {String(PRODUCT_THEMES.length).padStart(2, "0")}
+                  </span>
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+                    {active.flavor}
+                  </span>
+                </div>
+                <h1 className="mt-1 font-display text-4xl uppercase leading-[0.95] tracking-tight sm:text-5xl">
+                  {active.name}
+                </h1>
+                <p className="mt-1.5 max-w-md text-sm font-medium leading-snug text-[var(--ink)]">
+                  {active.tagline}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
           <ThumbSwitcher
             products={PRODUCT_THEMES}
             activeId={active.id}
@@ -433,7 +393,40 @@ export function ProductWorld({ activeId, onSelect }: ProductWorldProps) {
           />
         </div>
 
-        <CircleCTA accent={active.accent} accentInk={active.accentInk} />
+        {/* Bottom-center: Spec callouts */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active.id}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden flex-wrap items-center justify-center gap-3 lg:col-span-4 lg:flex"
+          >
+            {[
+              { label: "CAPACITY", value: active.specs.puffs },
+              { label: "CHASSIS", value: active.specs.finish },
+              { label: "DISPLAY", value: active.specs.display },
+            ].map((spec) => (
+              <div
+                key={spec.label}
+                className="rounded-2xl border border-current/20 bg-[var(--surface-tint)] px-3.5 py-2.5 backdrop-blur-md"
+              >
+                <span className="block font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  {spec.label}
+                </span>
+                <span className="mt-0.5 block font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+                  {spec.value}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Bottom-right: CircleCTA */}
+        <div className="flex justify-end lg:col-span-3">
+          <CircleCTA accent={active.accent} accentInk={active.accentInk} />
+        </div>
       </div>
 
       {/* Bottom Edge: Checkered accent stripe + Fast Marquee */}
